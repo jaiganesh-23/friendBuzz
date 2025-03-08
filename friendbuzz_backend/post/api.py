@@ -24,6 +24,7 @@ def post_list(request):
     trend = request.GET.get('trend', '')
 
     if trend:
+        posts = Post.objects.all()
         posts = posts.filter(body__icontains='#' + trend).filter(is_private=False)
 
     serializer = PostSerializer(posts, many=True)
@@ -137,6 +138,23 @@ def post_create_comment(request, pk):
     serializer = CommentSerializer(comment)
 
     return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['DELETE'])
+def post_delete(request, pk):
+    post = Post.objects.filter(created_by=request.user).get(pk=pk)
+    post.delete()
+
+    return JsonResponse({'message': 'post deleted'})
+
+
+@api_view(['POST'])
+def post_report(request, pk):
+    post = Post.objects.get(pk=pk)
+    post.reported_by_users.add(request.user)
+    post.save()
+
+    return JsonResponse({'message': 'post reported'})
 
 
 @api_view(['GET'])

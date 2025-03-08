@@ -121,7 +121,7 @@ def send_friendship_request(request, pk):
     check1 = FriendshipRequest.objects.filter(created_for=request.user).filter(created_by=user)
     check2 = FriendshipRequest.objects.filter(created_for=user).filter(created_by=request.user)
 
-    if not check1 or not check2:
+    if not check1 and not check2:
         friendrequest = FriendshipRequest.objects.create(created_for=user, created_by=request.user)
 
         notification = create_notification(request, 'new_friendrequest', friendrequest_id=friendrequest.id)
