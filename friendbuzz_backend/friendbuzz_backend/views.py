@@ -5,7 +5,8 @@ import socketio
 
 sio = socketio.Server(async_mode=async_mode,cors_allowed_origins=[
     "http://localhost:5173", 
-    "http://127.0.0.1:5173"])
+    "http://127.0.0.1:5173",
+    "https://friendbuzz-frontend.onrender.com"])
 
 @sio.event
 def connection_event(sid, message):
