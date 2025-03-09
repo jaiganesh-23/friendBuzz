@@ -26,9 +26,9 @@ SECRET_KEY = 'django-insecure-_+oh#95_meph^moobh)i@(0*c$jf9!bsmy8qkvu!dqng_tb$vm
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://www.friendbuzz-z7xz.onrender.com']
 
-WEBSITE_URL = 'http://127.0.0.1:8000'
+WEBSITE_URL = 'https://www.friendbuzz-z7xz.onrender.com'
 
 
 # Application definition
