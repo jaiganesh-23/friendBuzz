@@ -23,6 +23,9 @@
                         </div>
                         <span class="text-xs text-gray-500">{{ conversation.modified_at_formatted }} ago</span>
                     </div>
+                    <div v-if="!conversations.length">
+                        <p class="text-center text-xs font-bold">No Conversations yet</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -151,9 +154,10 @@ export default {
                     if (this.conversations.length) {
                         this.activeConversation = this.conversations[0].id
                         this.activeConversationId = this.conversations[0].id
+                        this.getMessages()
                     }
 
-                    this.getMessages()
+                    
                 })
                 .catch(error => {
                     console.log(error)

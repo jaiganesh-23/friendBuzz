@@ -39,8 +39,8 @@
                     </div>
 
                     <div class="mt-6 space-x-4">
-                        <button class="inline-block py-4 px-6 bg-purple-600 text-white rounded-lg" @click="handleRequest('accepted', friendshipRequest.created_by.id)">Accept</button>
-                        <button class="inline-block py-4 px-6 bg-red-600 text-white rounded-lg" @click="handleRequest('rejected', friendshipRequest.created_by.id)">Reject</button>
+                        <button class="inline-block py-4 px-6 bg-purple-600 text-white rounded-lg" @click="handleRequest('accepted', friendshipRequest.created_by.id, friendshipRequest.id)">Accept</button>
+                        <button class="inline-block py-4 px-6 bg-red-600 text-white rounded-lg" @click="handleRequest('rejected', friendshipRequest.created_by.id, friendshipRequest.id)">Reject</button>
                     </div>
                 </div>
 
@@ -131,13 +131,14 @@ export default {
                 })
         },
 
-        handleRequest(status, pk) {
+        handleRequest(status, pk, id) {
             console.log('handleRequest', status)
 
             axios
                 .post(`/api/friends/${pk}/${status}/`)
                 .then(response => {
                     console.log('data', response.data)
+                    this.getFriends()
                 })
                 .catch(error => {
                     console.log('error', error)

@@ -9,7 +9,8 @@ from notification.utils import create_notification
 from .forms import SignupForm, ProfileForm
 from .models import User, FriendshipRequest
 from .serializers import UserSerializer, FriendshipRequestSerializer
-
+from chat.models import Conversation
+from django.conf import settings
 
 @api_view(['GET'])
 def me(request):
@@ -40,7 +41,7 @@ def signup(request):
         user.is_active = False
         user.save()
 
-        url = f'http://127.0.0.1:8000/activateemail/?email={user.email}&id={user.id}'
+        url = settings.WEBSITE_URL + f'/activateemail/?email={user.email}&id={user.id}'
 
         send_mail(
             "Please verify your email",
@@ -135,17 +136,34 @@ def send_friendship_request(request, pk):
 def handle_request(request, pk, status):
     user = User.objects.get(pk=pk)
     friendship_request = FriendshipRequest.objects.filter(created_for=request.user).get(created_by=user)
-    friendship_request.status = status
-    friendship_request.save()
+    if status == 'accepted':
+        friendship_request.status = status
+        friendship_request.save()
+        
 
-    user.friends.add(request.user)
-    user.friends_count = user.friends_count + 1
-    user.save()
+        user.friends.add(request.user)
+        user.friends_count = user.friends_count + 1
+        user.save()
 
-    request_user = request.user
-    request_user.friends_count = request_user.friends_count + 1
-    request_user.save()
+        request_user = request.user
+        request_user.friends_count = request_user.friends_count + 1
+        request_user.save()
 
-    notification = create_notification(request, 'accepted_friendrequest', friendrequest_id=friendship_request.id)
+        conversations = Conversation.objects.filter(users__in=list([request.user])).filter(users__in=list([user]))
+        if not conversations.exists():
+            conversation = Conversation.objects.create()
+            conversation.users.add(user, request.user)
+            conversation.save()
+
+        notification = create_notification(request, 'accepted_friendrequest', friendrequest_id=friendship_request.id)
+        friendship_request.delete()
+
+    elif status == 'rejected':
+        friendship_request.status = status
+        friendship_request.save()
+        
+
+        notification = create_notification(request, 'rejected_friendrequest', friendrequest_id=friendship_request.id)
+        friendship_request.delete()
 
     return JsonResponse({'message': 'friendship request updated'})
