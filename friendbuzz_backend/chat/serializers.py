@@ -16,10 +16,11 @@ class ConversationSerializer(serializers.ModelSerializer):
 class ConversationMessageSerializer(serializers.ModelSerializer):
     sent_to = UserSerializer(read_only=True)
     created_by = UserSerializer(read_only=True)
+    conversation = ConversationSerializer(read_only=True)
 
     class Meta:
         model = ConversationMessage
-        fields = ('id', 'sent_to', 'created_by', 'created_at_formatted', 'body',)
+        fields = ('id', 'sent_to', 'created_by', 'created_at_formatted', 'body', 'conversation', )
 
 
 class ConversationDetailSerializer(serializers.ModelSerializer):

@@ -10,8 +10,6 @@
                         v-on:click="setActiveConversation(conversation.id)"
                     >
                         <div class="flex items-center space-x-2">
-                            
-                            
                             <template
                                 v-for="user in conversation.users"
                                 v-bind:key="user.id"
@@ -23,7 +21,6 @@
                                 >{{ user.name }}</p>
                             </template>
                         </div>
-
                         <span class="text-xs text-gray-500">{{ conversation.modified_at_formatted }} ago</span>
                     </div>
                 </div>
@@ -31,7 +28,7 @@
         </div>
 
         <div class="main-center col-span-3 space-y-4">
-            <div class="bg-white border border-gray-200 rounded-lg">
+            <div class="bg-white border border-gray-200 rounded-lg h-[60vh] overflow-y-auto" ref="chatContainer">
                 <div class="flex flex-col flex-grow p-4">
                     <template
                         v-for="message in activeConversation.messages"
@@ -88,15 +85,24 @@
 <script>
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
+import { io } from 'socket.io-client'
 
 export default {
     name: 'chat',
 
     setup() {
         const userStore = useUserStore()
-
+        const socket = io(import.meta.env.VITE_API_URL)
+        socket.on("connect", ()=> {
+            socket.emit("connection_event", {message1: "hello", message2: "hello2"});
+        })
+        socket.on("connection_response", (message)=>{
+            console.log('inside connection response')
+            console.log(message)
+        })
         return {
-            userStore
+            userStore,
+            socket,
         }
     },
 
@@ -104,12 +110,23 @@ export default {
         return {
             conversations: [],
             activeConversation: {},
-            body: ''
+            body: '',
+            activeConversationId: '',
         }
     },
 
     mounted() {
         this.getConversations()
+        this.socket.connect();
+        this.socket.on("message_response", (message)=> {
+            if(message.conversation.id == this.activeConversationId && message.created_by.id != this.userStore.user.id){
+                    console.log('inside final add');
+                    console.log(message);
+                    this.activeConversation.messages.push(message);
+                    this.scrollToBottom();
+                }
+            })
+        this.scrollToBottom();
     },
     
     methods: {
@@ -117,7 +134,9 @@ export default {
             console.log('setActiveConversation', id)
 
             this.activeConversation = id
+            this.activeConversationId = id
             this.getMessages()
+            this.scrollToBottom()
         },
         getConversations() {
             console.log('getConversations')
@@ -131,6 +150,7 @@ export default {
 
                     if (this.conversations.length) {
                         this.activeConversation = this.conversations[0].id
+                        this.activeConversationId = this.conversations[0].id
                     }
 
                     this.getMessages()
@@ -147,8 +167,9 @@ export default {
                 .get(`/api/chat/${this.activeConversation}/`)
                 .then(response => {
                     console.log(response.data)
-
+                    this.activeConversationId = this.activeConversation
                     this.activeConversation = response.data
+                    this.scrollToBottom();
                 })
                 .catch(error => {
                     console.log(error)
@@ -164,13 +185,21 @@ export default {
                 })
                 .then(response => {
                     console.log(response.data)
-
+                    this.socket.emit("my_message", response.data)
                     this.activeConversation.messages.push(response.data)
                     this.body = ''
+                    this.scrollToBottom();
                 })
                 .catch(error => {
                     console.log(error)
                 })
+        },
+
+        scrollToBottom() {
+            this.$nextTick(() => {
+                const chatContainer = this.$refs.chatContainer;
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            });
         }
     }
 }
