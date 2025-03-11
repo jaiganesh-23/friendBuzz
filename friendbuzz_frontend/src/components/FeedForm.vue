@@ -41,6 +41,10 @@ export default {
     },
 
     methods: {
+        onFileChange(e) {
+            const file = e.target.files[0];
+            this.url = URL.createObjectURL(file);
+        },
         submitForm() {
             console.log('submitForm', this.body)
 
