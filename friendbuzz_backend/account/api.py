@@ -46,7 +46,7 @@ def signup(request):
         send_mail(
             "Please verify your email",
             f"The url for activating your account is: {url}",
-            "noreply@wey.com",
+            "noreply@friendbuzz.com",
             [user.email],
             fail_silently=False,
         )

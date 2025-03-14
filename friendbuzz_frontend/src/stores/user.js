@@ -61,12 +61,12 @@ export const useUserStore = defineStore('user', {
             this.user.email = null
             this.user.avatar = null
 
-            localStorage.setItem('user.access', '')
-            localStorage.setItem('user.refresh', '')
-            localStorage.setItem('user.id', '')
-            localStorage.setItem('user.name', '')
-            localStorage.setItem('user.email', '')
-            localStorage.setItem('user.avatar', '')
+            localStorage.removeItem('user.access')
+            localStorage.removeItem('user.refresh')
+            localStorage.removeItem('user.id')
+            localStorage.removeItem('user.name')
+            localStorage.removeItem('user.email')
+            localStorage.removeItem('user.avatar')
         },
 
         setUserInfo(user) {
