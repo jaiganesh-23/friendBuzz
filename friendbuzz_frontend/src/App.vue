@@ -71,11 +71,11 @@
             </div>    
     </nav>
 
-    <main class="px-8 py-6 bg-gray-100">
+    <main class="px-8 py-8 bg-gray-100 min-h-[80vh]">
         <RouterView />
     </main>
 
-    <div class="mt-10 footer-div flex items-center p-5 bg-[#410445] text-white justify-evenly">
+    <div class="footer-div flex items-center p-5 bg-[#410445] text-white justify-evenly">
         <div>
             <p class="text-2xl text-[#F6DC43]">FriendBuzz</p>
             <p class="text-md">All Rights reserved.</p>
