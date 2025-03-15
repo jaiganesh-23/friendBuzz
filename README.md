@@ -1,3 +1,3 @@
-Demo Credentials:
-Email:demo@gmail.com
+Demo Credentials:<br>
+Email:demo@gmail.com<br>
 password:user1234
